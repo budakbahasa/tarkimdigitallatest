@@ -80,6 +80,7 @@
 <body class="min-h-screen flex items-center justify-center p-0 sm:p-4 select-none relative" id="main-body">
 
     <div id="wrong-flash-overlay" class="pointer-events-none fixed inset-0 z-[200] hidden w-full h-full border-[15px] border-red-500"></div>
+
     <audio id="bgm-audio" loop src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6591201e.mp3?filename=stranger-things-107662.mp3"></audio>
 
     <div id="print-report-section" class="hidden fixed inset-0 z-[100] bg-white overflow-y-auto text-slate-800 p-8">
@@ -395,7 +396,7 @@
                 </div>
             </div>
 
-            <!-- 11. ADMIN CMS -->
+            <!-- 11. ADMIN CMS DENGAN TAMBAHAN MEDIA DAN CETAK PDF ANALISIS -->
             <div id="section-admin" class="hidden w-full max-w-5xl flex flex-col h-full overflow-hidden">
                 <div class="flex justify-between items-center mb-4"><button onclick="exitAdminView()" class="text-slate-500 font-bold flex items-center gap-1.5 bg-white px-4 py-2 rounded-xl shadow-sm bounce-btn"><i class="fa-solid fa-arrow-left"></i> Kembali</button><h2 class="font-heading font-bold text-xl text-brand-darkSlate"><i class="fa-solid fa-screwdriver-wrench text-brand-mint"></i> Admin CMS</h2></div>
                 <div class="flex border-b mb-4 overflow-x-auto">
@@ -468,6 +469,7 @@
                         </div>
                         <button onclick="resetMediaDefaults()" class="w-full bg-red-500 hover:bg-red-600 text-white text-sm py-3 rounded-xl font-bold shadow transition">Padam Semua Media (Kembali ke Infografik Asal)</button>
                     </div>
+
                 </div>
             </div>
 
@@ -476,12 +478,13 @@
 
     <!-- LOGIK JAVASCRIPT KESELURUHAN & SISTEM REAL-TIME SYNC -->
     <script>
-        // ==============================================================================
-        // 🛑 SANGAT PENTING: TAMPAL URL GOOGLE APPS SCRIPT CIKGU DI BAWAH INI SEKARANG
-        // Jika dibiarkan kosong, murid tidak akan dapat menghantar markah!
-        // ==============================================================================
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxgED0N0jODuTzMai3TerBCjDpk8fvdPFfzzFf9DC2mkfEOF60qi08UXAjVKD_a-EaFUg/exec";
-        // ==============================================================================
+        // =========================================================================================
+        // 🛑 WAJIB TUKAR DI SINI SAHAJA 🛑
+        // Gantikan "MASUKKAN_URL_WEB_APP_DI_SINI" dengan pautan Google Apps Script Cikgu.
+        // Wajib kekalkan tanda " " di awal dan akhir pautan tersebut.
+        // =========================================================================================
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxA0D4mn2bzwoewbIYBw9Fi1MEDZBY_qWg9jpFwqLyZboqid5T0OGth1n4jitHbRwUOuA/exec";
+        // =========================================================================================
         
         let isAudioPlaying = false; 
         let currentUser = { name: '', class: '', sekolah: '', aliran: '', avatar: 'fa-robot', stars: 0 }; 
@@ -490,21 +493,21 @@
         let selectedAvatar = 'fa-robot';
         const avatarIcons = ['fa-robot', 'fa-user-ninja', 'fa-user-astronaut', 'fa-cat', 'fa-dragon', 'fa-ghost'];
         
-        let scoresDatabase = JSON.parse(localStorage.getItem('tarkim_scores_v25')) || [];
-        let usersProfileDatabase = JSON.parse(localStorage.getItem('tarkim_users_v25')) || {};
-        let feedbacksDatabase = JSON.parse(localStorage.getItem('tarkim_feedback_v25')) || [];
-        let mediaDatabase = JSON.parse(localStorage.getItem('tarkim_media_v25')) || { nota1: 'interactive_template', nota2: 'interactive_template', teknik1: 'interactive_template', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' };
+        let scoresDatabase = JSON.parse(localStorage.getItem('tarkim_scores_v26')) || [];
+        let usersProfileDatabase = JSON.parse(localStorage.getItem('tarkim_users_v26')) || {};
+        let feedbacksDatabase = JSON.parse(localStorage.getItem('tarkim_feedback_v26')) || [];
+        let mediaDatabase = JSON.parse(localStorage.getItem('tarkim_media_v26')) || { nota1: 'interactive_template', nota2: 'interactive_template', teknik1: 'interactive_template', videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ' };
         
-        let wordsDatabase = JSON.parse(localStorage.getItem('tarkim_words_v25')) || {
+        let wordsDatabase = JSON.parse(localStorage.getItem('tarkim_words_v26')) || {
             1: [{id:1,base:'lukis',prefix:'me-',suffix:'',full:'melukis',type:'Imbuhan Awalan'},{id:2,base:'kerja',prefix:'be-',suffix:'',full:'bekerja',type:'Imbuhan Awalan'},{id:3,base:'jatuh',prefix:'ter-',suffix:'',full:'terjatuh',type:'Imbuhan Awalan'},{id:4,base:'baca',prefix:'',suffix:'-an',full:'bacaan',type:'Imbuhan Akhiran'},{id:5,base:'kemas',prefix:'',suffix:'-kan',full:'kemaskan',type:'Imbuhan Akhiran'},{id:6,base:'tani',prefix:'per-',suffix:'-an',full:'pertanian',type:'Imbuhan Apitan'},{id:7,base:'jalan',prefix:'per-',suffix:'-an',full:'perjalanan',type:'Imbuhan Apitan'},{id:8,base:'turut',prefix:'',suffix:'-i',full:'turuti',type:'Imbuhan Akhiran'},{id:9,base:'baca',prefix:'mem-',suffix:'',full:'membaca',type:'Imbuhan Awalan'},{id:10,base:'jalan',prefix:'ber-',suffix:'',full:'berjalan',type:'Imbuhan Awalan'},{id:11,base:'lukis',prefix:'',suffix:'-an',full:'lukisan',type:'Imbuhan Akhiran'},{id:12,base:'jalan',prefix:'',suffix:'-an',full:'jalanan',type:'Imbuhan Akhiran'},{id:13,base:'kerja',prefix:'pe-',suffix:'-an',full:'pekerjaan',type:'Imbuhan Apitan'},{id:14,base:'rupa',prefix:'me-',suffix:'-kan',full:'merupakan',type:'Imbuhan Apitan'},{id:15,base:'baca',prefix:'di-',suffix:'-kan',full:'dibacakan',type:'Imbuhan Apitan'},{id:16,base:'beritahu',prefix:'mem-',suffix:'',full:'memberitahu',type:'Imbuhan Awalan'},{id:17,base:'surih',prefix:'',suffix:'-kan',full:'surihkan',type:'Imbuhan Akhiran'}],
             2: [{id:101,base:'sambung',prefix:'-in-',suffix:'',full:'sinambung',type:'Imbuhan Sisipan'},{id:102,base:'serak',prefix:'-el-',suffix:'',full:'selerak',type:'Imbuhan Sisipan'},{id:103,base:'kuncup',prefix:'-em-',suffix:'',full:'kemuncup',type:'Imbuhan Sisipan'},{id:104,base:'sabut',prefix:'-er-',suffix:'',full:'serabut',type:'Imbuhan Sisipan'},{id:105,base:'serbak',prefix:'-em-',suffix:'',full:'semerbak',type:'Imbuhan Sisipan'},{id:106,base:'tapak',prefix:'-el-',suffix:'',full:'telapak',type:'Imbuhan Sisipan'},{id:107,base:'tulis',prefix:'pe-',suffix:'-an',full:'penulisan',type:'Imbuhan Apitan'},{id:108,base:'sayang',prefix:'me-',suffix:'-i',full:'menyayangi',type:'Imbuhan Apitan'},{id:109,base:'periksa',prefix:'pe-',suffix:'-an',full:'pemeriksaan',type:'Imbuhan Apitan'},{id:110,base:'gilang',prefix:'-em-',suffix:'',full:'gemilang',type:'Imbuhan Sisipan'},{id:111,base:'suling',prefix:'-er-',suffix:'',full:'seruling',type:'Imbuhan Sisipan'},{id:112,base:'jujur',prefix:'-el-',suffix:'',full:'jelujur',type:'Imbuhan Sisipan'},{id:113,base:'kemas',prefix:'me-',suffix:'',full:'mengemas',type:'Imbuhan Awalan'},{id:114,base:'kawal',prefix:'me-',suffix:'',full:'mengawal',type:'Imbuhan Awalan'},{id:115,base:'kira',prefix:'me-',suffix:'-i',full:'mengira',type:'Imbuhan Apitan'},{id:116,base:'tutup',prefix:'pe-',suffix:'-an',full:'penutupan',type:'Imbuhan Apitan'},{id:117,base:'kunjung',prefix:'me-',suffix:'-i',full:'mengunjungi',type:'Imbuhan Apitan'}]
         };
-        let passagesDatabase = JSON.parse(localStorage.getItem('tarkim_passages_v25')) || [
+        let passagesDatabase = JSON.parse(localStorage.getItem('tarkim_passages_v26')) || [
             { title:"Petikan A", text:"Amirul melawat kawasan pertanian pak ciknya. Pekerjaan itu sangat menyeronokkan untuk perjalanan ke bandar.", answers:[{word:"melawat",type:"Imbuhan Awalan"},{word:"pertanian",type:"Imbuhan Apitan"},{word:"Pekerjaan",type:"Imbuhan Apitan"},{word:"menyeronokkan",type:"Imbuhan Apitan"},{word:"perjalanan",type:"Imbuhan Apitan"}] },
             { title:"Petikan B", text:"Kami membaca buku di perpustakaan. Lukisan digantung berkilauan.", answers:[{word:"membaca",type:"Imbuhan Awalan"},{word:"perpustakaan",type:"Imbuhan Apitan"},{word:"Lukisan",type:"Imbuhan Akhiran"},{word:"digantung",type:"Imbuhan Awalan"},{word:"berkilauan",type:"Imbuhan Apitan"}] },
             { title:"Petikan C", text:"Seruling bertiup dari telapak bukit. Selerak daun gemilang.", answers:[{word:"Seruling",type:"Imbuhan Sisipan"},{word:"bertiup",type:"Imbuhan Awalan"},{word:"telapak",type:"Imbuhan Sisipan"},{word:"Selerak",type:"Imbuhan Sisipan"},{word:"gemilang",type:"Imbuhan Sisipan"}] }
         ];
-        let quizDatabase = JSON.parse(localStorage.getItem('tarkim_quiz_v25')) || [
+        let quizDatabase = JSON.parse(localStorage.getItem('tarkim_quiz_v26')) || [
             {q:"Perkataan yang mengandungi IMBUHAN AWALAN?", options:["bacaan","melukis","perjalanan","telapak"], correct:"melukis", objective:"Tatabahasa"},
             {q:"Perkataan yang menggunakan IMBUHAN SISIPAN?", options:["kemaskan","selerak","terjatuh","perjalanan"], correct:"selerak", objective:"Tatabahasa"},
             {q:"Apakah jenis imbuhan bagi 'pemeriksaan'?", options:["Awalan","Akhiran","Apitan","Sisipan"], correct:"Apitan", objective:"Tatabahasa"},
@@ -513,9 +516,9 @@
             {q:"Kata dasar bagi kata bersisip 'telapak'?", options:["tapak","lapak","telap","pak"], correct:"tapak", objective:"Kata Dasar"}
         ];
 
-        // --- 2. SISTEM REAL-TIME GOOGLE SHEETS TERBINA DALAM ---
+        // --- 2. SISTEM REAL-TIME GOOGLE SHEETS ---
         function getApiUrl() {
-            return (APPS_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbxgED0N0jODuTzMai3TerBCjDpk8fvdPFfzzFf9DC2mkfEOF60qi08UXAjVKD_a-EaFUg/exec" && APPS_SCRIPT_URL !== "") ? APPS_SCRIPT_URL : "";
+            return (APPS_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbxA0D4mn2bzwoewbIYBw9Fi1MEDZBY_qWg9jpFwqLyZboqid5T0OGth1n4jitHbRwUOuA/exec" && APPS_SCRIPT_URL !== "") ? APPS_SCRIPT_URL : "";
         }
 
         function fetchRealtimeData(isManual = false) {
@@ -523,7 +526,7 @@
             if(!url) return;
             const fetchUrl = url.includes('?') ? url + `&t=${new Date().getTime()}` : url + `?t=${new Date().getTime()}`;
             
-            fetch(fetchUrl)
+            fetch(fetchUrl, { redirect: "follow" })
                 .then(res => res.json())
                 .then(data => {
                     if(data && Object.keys(data).length > 0) {
@@ -536,17 +539,17 @@
                             if(data.state.passages) passagesDatabase = data.state.passages;
                             if(data.state.media) {
                                 mediaDatabase = data.state.media;
-                                localStorage.setItem('tarkim_media_v25', JSON.stringify(mediaDatabase));
+                                localStorage.setItem('tarkim_media_v26', JSON.stringify(mediaDatabase));
                                 applyMediaSettings();
                             }
                         }
                         
-                        localStorage.setItem('tarkim_scores_v25', JSON.stringify(scoresDatabase));
-                        localStorage.setItem('tarkim_users_v25', JSON.stringify(usersProfileDatabase));
-                        localStorage.setItem('tarkim_feedback_v25', JSON.stringify(feedbacksDatabase));
-                        localStorage.setItem('tarkim_words_v25', JSON.stringify(wordsDatabase));
-                        localStorage.setItem('tarkim_quiz_v25', JSON.stringify(quizDatabase));
-                        localStorage.setItem('tarkim_passages_v25', JSON.stringify(passagesDatabase));
+                        localStorage.setItem('tarkim_scores_v26', JSON.stringify(scoresDatabase));
+                        localStorage.setItem('tarkim_users_v26', JSON.stringify(usersProfileDatabase));
+                        localStorage.setItem('tarkim_feedback_v26', JSON.stringify(feedbacksDatabase));
+                        localStorage.setItem('tarkim_words_v26', JSON.stringify(wordsDatabase));
+                        localStorage.setItem('tarkim_quiz_v26', JSON.stringify(quizDatabase));
+                        localStorage.setItem('tarkim_passages_v26', JSON.stringify(passagesDatabase));
                         
                         const statusEl = document.getElementById('realtime-status');
                         if(statusEl) {
@@ -651,7 +654,7 @@
             if (!name || !cls || !sek || !alr) { Swal.fire('Opps!', 'Sila lengkapkan semua maklumat (Nama, Kelas, Sekolah, Aliran).', 'warning'); playSfx('fail'); return; } 
             const userId = `${name}_${cls}`; 
             if (!usersProfileDatabase[userId]) { usersProfileDatabase[userId] = { name: name, class: cls, sekolah: sek, aliran: alr, avatar: selectedAvatar }; } else { usersProfileDatabase[userId].avatar = selectedAvatar; usersProfileDatabase[userId].sekolah = sek; usersProfileDatabase[userId].aliran = alr; } 
-            localStorage.setItem('tarkim_users_v25', JSON.stringify(usersProfileDatabase)); syncStateToSheets();
+            localStorage.setItem('tarkim_users_v26', JSON.stringify(usersProfileDatabase)); syncStateToSheets();
             currentUser = usersProfileDatabase[userId]; 
             
             document.getElementById('header-user-info').innerText = `${name} (${cls})`; document.getElementById('header-avatar-icon').className = `fa-solid ${selectedAvatar} text-brand-mint`; document.getElementById('app-header').classList.remove('hidden');
@@ -717,7 +720,7 @@
         function showQRCode() { let u = window.location.href.split('#')[0]; if(u.includes('blob:')) u = 'https://cikguam.github.io/tarkim/'; Swal.fire({title:'Imbas QR', imageUrl:`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(u)}&margin=10`}); }
         
         function showFeedbackSection() { fetchRealtimeData(); showScreen('section-maklumbalas'); renderFeedbacks(); }
-        function submitFeedback() { const f = document.getElementById('input-feedback').value.trim(); if(!f) return Swal.fire('Opps', 'Tulis maklum balas dahulu', 'warning'); feedbacksDatabase.push({ name: currentUser.name, avatar: currentUser.avatar, comment: f, time: new Date().toLocaleDateString('ms-MY') }); localStorage.setItem('tarkim_feedback_v25', JSON.stringify(feedbacksDatabase)); syncStateToSheets(); document.getElementById('input-feedback').value = ''; playSfx('success'); triggerConfetti(); renderFeedbacks(); Swal.fire('Berjaya', 'Maklum balas dihantar!', 'success'); }
+        function submitFeedback() { const f = document.getElementById('input-feedback').value.trim(); if(!f) return Swal.fire('Opps', 'Tulis maklum balas dahulu', 'warning'); feedbacksDatabase.push({ name: currentUser.name, avatar: currentUser.avatar, comment: f, time: new Date().toLocaleDateString('ms-MY') }); localStorage.setItem('tarkim_feedback_v26', JSON.stringify(feedbacksDatabase)); syncStateToSheets(); document.getElementById('input-feedback').value = ''; playSfx('success'); triggerConfetti(); renderFeedbacks(); Swal.fire('Berjaya', 'Maklum balas dihantar!', 'success'); }
         function renderFeedbacks() { const list = document.getElementById('feedback-list'); list.innerHTML = ''; [...feedbacksDatabase].reverse().forEach(fb => { list.innerHTML += `<div class="p-4 flex gap-4 border-b border-slate-100"><div class="w-10 h-10 rounded-full border flex shrink-0 items-center justify-center bg-white"><i class="fa-solid ${fb.avatar || 'fa-user'}"></i></div><div><p class="font-bold text-slate-700">${fb.name} <span class="text-[9px] text-slate-400 ml-2">${fb.time}</span></p><p class="text-sm text-slate-600 mt-1">${fb.comment}</p></div></div>`; }); }
 
         // --- 6. MEDIA RENDER ---
@@ -736,7 +739,7 @@
             const m = Math.min(5, currentLevelWordsList.length);
             if (activeWordIndex >= m) {
                 const rec = { name: currentUser.name, class: currentUser.class, sekolah: currentUser.sekolah, aliran: currentUser.aliran, activity: `Latihan Tahap ${activeLevel}`, score: `${levelScoreTracker}/${m}`, status: (levelScoreTracker>=4)?'Cemerlang':'Bimbingan', time: new Date().toLocaleString() }; 
-                scoresDatabase.push(rec); localStorage.setItem('tarkim_scores_v25', JSON.stringify(scoresDatabase)); sendScoreToGoogleSheets(rec); 
+                scoresDatabase.push(rec); localStorage.setItem('tarkim_scores_v26', JSON.stringify(scoresDatabase)); sendScoreToGoogleSheets(rec); 
                 if(levelScoreTracker >= 4) { triggerConfetti(); playSfx('success'); } else { playSfx('fail'); }
                 Swal.fire({ title: 'Selesai!', html: `<p class="text-lg">Skor: <strong>${levelScoreTracker}/${m}</strong></p>`, icon: 'success', showDenyButton: true, confirmButtonText: 'Kembali', denyButtonText: '<i class="fa-solid fa-file-pdf"></i> Jana PDF' }).then(r=>{ if(r.isDenied) showReportAndPrint(`Latihan Tahap ${activeLevel}`, `${levelScoreTracker}/${m}`); else showSection('permainan'); }); return;
             }
@@ -776,7 +779,7 @@
         function verifyLevel3Answers() {
             const pAns = passagesDatabase[activePassageIndex].answers; let c=0;
             selectedL3Words.forEach(s=>{ const match=pAns.find(a=>a.word.toLowerCase()===s.word.toLowerCase()); const isC=match&&match.type===s.userCategory; if(isC) c++; currentSessionLog.push({item:s.word, user:s.userCategory||'Tiada', correct:match?match.type:'Bukan Imbuhan', isCorrect:isC}); });
-            const total = pAns.length; const rec = {name:currentUser.name, class:currentUser.class, sekolah:currentUser.sekolah, aliran:currentUser.aliran, activity:`Tahap 3`, score:`${c}/${total}`, status:c===total?'Cemerlang':'Bimbingan', time:new Date().toLocaleString()}; scoresDatabase.push(rec); localStorage.setItem('tarkim_scores_v25', JSON.stringify(scoresDatabase)); sendScoreToGoogleSheets(rec); 
+            const total = pAns.length; const rec = {name:currentUser.name, class:currentUser.class, sekolah:currentUser.sekolah, aliran:currentUser.aliran, activity:`Tahap 3`, score:`${c}/${total}`, status:c===total?'Cemerlang':'Bimbingan', time:new Date().toLocaleString()}; scoresDatabase.push(rec); localStorage.setItem('tarkim_scores_v26', JSON.stringify(scoresDatabase)); sendScoreToGoogleSheets(rec); 
             if(c === total) { triggerConfetti(); playSfx('success'); } else { triggerWrongEffect(); playSfx('fail'); }
             Swal.fire({title:'Direkod!', html:`<p class="text-lg">Markah: <strong>${c}/${total}</strong></p>`, icon:'success', showDenyButton:true, confirmButtonText:'Teruskan', denyButtonText:'Jana PDF'}).then(r=>{ if(r.isDenied) showReportAndPrint('Tahap 3', `${c}/${total}`); else showSection('permainan'); });
         }
@@ -794,7 +797,7 @@
             quizAnswersCollected.push(tempSelectedAnswer); currentQuizIndex++;
             if(currentQuizIndex < quizDatabase.length) loadQuizQuestion(); else {
                 let s=0; quizDatabase.forEach((q,i)=>{ const isC = quizAnswersCollected[i]===q.correct; if(isC) s++; currentSessionLog.push({item:q.q, user:quizAnswersCollected[i]||'Tiada', correct:q.correct, isCorrect:isC}); });
-                const rec = {name:currentUser.name, class:currentUser.class, sekolah:currentUser.sekolah, aliran:currentUser.aliran, activity:"Kuiz Formatif", score:`${s}/${quizDatabase.length}`, status:"Selesai", time:new Date().toLocaleString()}; scoresDatabase.push(rec); localStorage.setItem('tarkim_scores_v25', JSON.stringify(scoresDatabase)); sendScoreToGoogleSheets(rec);  
+                const rec = {name:currentUser.name, class:currentUser.class, sekolah:currentUser.sekolah, aliran:currentUser.aliran, activity:"Kuiz Formatif", score:`${s}/${quizDatabase.length}`, status:"Selesai", time:new Date().toLocaleString()}; scoresDatabase.push(rec); localStorage.setItem('tarkim_scores_v26', JSON.stringify(scoresDatabase)); sendScoreToGoogleSheets(rec);  
                 if(s >= quizDatabase.length/2) { triggerConfetti(); playSfx('success'); } else { triggerWrongEffect(); playSfx('fail'); }
                 Swal.fire({title:'Selesai!', html:`<p class="text-lg">Skor: <strong>${s}/${quizDatabase.length}</strong></p>`, icon:'success', showDenyButton:true, confirmButtonText:'Kembali', denyButtonText:'Jana PDF'}).then(r=>{ if(r.isDenied) showReportAndPrint('Kuiz Formatif', `${s}/${quizDatabase.length}`); else showScreen('screen-menu'); });
             }
@@ -848,7 +851,7 @@
             else { playSfx('fail'); triggerWrongEffect(); }
 
             const rec = {name:currentUser.name, class:currentUser.class, sekolah:currentUser.sekolah, aliran:currentUser.aliran, activity:`Cabaran TarKiM (${anugerah})`, score:`${s}/${total}`, status:`Anugerah ${anugerah}`, time:new Date().toLocaleString()}; 
-            scoresDatabase.push(rec); localStorage.setItem('tarkim_scores_v25', JSON.stringify(scoresDatabase)); sendScoreToGoogleSheets(rec); 
+            scoresDatabase.push(rec); localStorage.setItem('tarkim_scores_v26', JSON.stringify(scoresDatabase)); sendScoreToGoogleSheets(rec); 
             
             Swal.fire({ title: 'MISI SELESAI!', html: `<div class="text-brand-darkSlate font-bold text-2xl mb-4">REVOLUSI BAHASA!</div><div class="mb-4 ${warna}"><i class="fa-solid ${ikon} text-6xl drop-shadow-md mb-2"></i><br><span class="font-bold text-xl uppercase tracking-widest">Anugerah ${anugerah}</span></div><p class="font-bold text-lg text-slate-700">Skor Coin: ${s} / ${total}</p>`, icon: 'success', showDenyButton: true, confirmButtonColor: '#3B82F6', denyButtonColor: '#10B981', confirmButtonText: 'Lobi', denyButtonText: '<i class="fa-solid fa-file-pdf"></i> Jana Laporan (PDF)' }).then(r => { if(r.isDenied) showReportAndPrint(`Cabaran TarKiM (Anugerah ${anugerah})`, `${s}/${total}`); else goBackToMenu(); });
         }
@@ -878,7 +881,7 @@
                 b.innerHTML += `<tr class="border-b hover:bg-slate-50"><td class="p-2 font-bold text-slate-700">${s.name}<br>${al}</td><td class="p-2 text-slate-500">${s.class}</td><td class="p-2 text-indigo-600 font-semibold">${s.activity}</td><td class="p-2 text-emerald-600 font-bold">${s.score}</td><td class="p-2 text-slate-600">${s.status}</td></tr>`; 
             }); 
         }
-        function clearLocalStorageScores() { scoresDatabase=[]; localStorage.removeItem('tarkim_scores_v25'); loadAdminScoresTable(); loadAdminAnalytics(); syncStateToSheets(); Swal.fire('Dibersihkan!','','success'); }
+        function clearLocalStorageScores() { scoresDatabase=[]; localStorage.removeItem('tarkim_scores_v26'); loadAdminScoresTable(); loadAdminAnalytics(); syncStateToSheets(); Swal.fire('Dibersihkan!','','success'); }
 
         function loadAdminAnalytics() {
             let activities = ["Tahap 1", "Tahap 2", "Tahap 3", "Kuiz Formatif", "Cabaran TarKiM"];
@@ -932,8 +935,8 @@
         }
 
         function loadAdminWordList() { const c = document.getElementById('admin-word-list'); c.innerHTML=''; [1,2].forEach(lvl=>{ wordsDatabase[lvl].forEach(w=>{ c.innerHTML+=`<div class="flex justify-between p-2 border-b"><span class="font-bold text-xs">T${lvl}: ${w.full}</span><button onclick="deleteAdminWord(${lvl},${w.id})" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button></div>`; }); }); }
-        function saveAdminWord() { const lvl=parseInt(document.getElementById('admin-word-level').value); const base=document.getElementById('admin-word-base').value; const pre=document.getElementById('admin-word-prefix').value; const suf=document.getElementById('admin-word-suffix').value; const full=document.getElementById('admin-word-full').value; const type=document.getElementById('admin-word-type').value; if(!base||!full) return Swal.fire('Ralat','Isi borang','error'); wordsDatabase[lvl].push({id:Date.now(), base:base, prefix:pre, suffix:suf, full:full, type:type}); localStorage.setItem('tarkim_words_v25', JSON.stringify(wordsDatabase)); syncStateToSheets(); Swal.fire('Disimpan','','success'); loadAdminWordList(); }
-        function deleteAdminWord(lvl, id) { wordsDatabase[lvl]=wordsDatabase[lvl].filter(w=>w.id!==id); localStorage.setItem('tarkim_words_v25', JSON.stringify(wordsDatabase)); syncStateToSheets(); loadAdminWordList(); }
+        function saveAdminWord() { const lvl=parseInt(document.getElementById('admin-word-level').value); const base=document.getElementById('admin-word-base').value; const pre=document.getElementById('admin-word-prefix').value; const suf=document.getElementById('admin-word-suffix').value; const full=document.getElementById('admin-word-full').value; const type=document.getElementById('admin-word-type').value; if(!base||!full) return Swal.fire('Ralat','Isi borang','error'); wordsDatabase[lvl].push({id:Date.now(), base:base, prefix:pre, suffix:suf, full:full, type:type}); localStorage.setItem('tarkim_words_v26', JSON.stringify(wordsDatabase)); syncStateToSheets(); Swal.fire('Disimpan','','success'); loadAdminWordList(); }
+        function deleteAdminWord(lvl, id) { wordsDatabase[lvl]=wordsDatabase[lvl].filter(w=>w.id!==id); localStorage.setItem('tarkim_words_v26', JSON.stringify(wordsDatabase)); syncStateToSheets(); loadAdminWordList(); }
         
         let adminTmpAnswers=[];
         function loadPassageToEditor() { const pIdx = parseInt(document.getElementById('admin-passage-select').value); const p = passagesDatabase[pIdx]; if(p) { document.getElementById('admin-passage-title').value=p.title; document.getElementById('admin-passage-text').value=p.text; adminTmpAnswers=[...p.answers]; renderAdminTokens(adminTmpAnswers.map(a=>a.word)); } }
@@ -941,12 +944,12 @@
         function renderAdminTokens(words) { const c = document.getElementById('admin-passage-tokens-list'); c.innerHTML=''; words.forEach((w,i)=>{ const ans = adminTmpAnswers.find(a=>a.word===w); const isC=!!ans; const t=ans?ans.type:'Imbuhan Awalan'; c.innerHTML+=`<div class="flex justify-between items-center bg-white p-2 border rounded"><div class="flex gap-2"><input type="checkbox" id="adm-tok-${i}" ${isC?'checked':''} onchange="toggleAdmTok('${w}', this.checked)"><label class="font-bold text-xs">${w}</label></div><select onchange="updateAdmTokType('${w}', this.value)" class="border rounded text-[10px] p-1 ${isC?'':'opacity-50 pointer-events-none'}"><option ${t==='Imbuhan Awalan'?'selected':''}>Imbuhan Awalan</option><option ${t==='Imbuhan Akhiran'?'selected':''}>Imbuhan Akhiran</option><option ${t==='Imbuhan Apitan'?'selected':''}>Imbuhan Apitan</option><option ${t==='Imbuhan Sisipan'?'selected':''}>Imbuhan Sisipan</option></select></div>`; }); }
         function toggleAdmTok(w, isChecked) { if(isChecked) adminTmpAnswers.push({word:w, type:'Imbuhan Awalan'}); else adminTmpAnswers=adminTmpAnswers.filter(a=>a.word!==w); renderAdminTokens(Array.from(document.querySelectorAll('#admin-passage-tokens-list label')).map(l=>l.innerText)); }
         function updateAdmTokType(w, t) { const a=adminTmpAnswers.find(x=>x.word===w); if(a) a.type=t; }
-        function saveActivePassage() { const pIdx = parseInt(document.getElementById('admin-passage-select').value); passagesDatabase[pIdx] = {title:document.getElementById('admin-passage-title').value, text:document.getElementById('admin-passage-text').value, answers:[...adminTmpAnswers]}; localStorage.setItem('tarkim_passages_v25', JSON.stringify(passagesDatabase)); syncStateToSheets(); Swal.fire('Disimpan','','success'); }
+        function saveActivePassage() { const pIdx = parseInt(document.getElementById('admin-passage-select').value); passagesDatabase[pIdx] = {title:document.getElementById('admin-passage-title').value, text:document.getElementById('admin-passage-text').value, answers:[...adminTmpAnswers]}; localStorage.setItem('tarkim_passages_v26', JSON.stringify(passagesDatabase)); syncStateToSheets(); Swal.fire('Disimpan','','success'); }
         
         let activeQuizEditorIndex=0;
         function loadQuizEditorQuestionsList() { const c = document.getElementById('admin-quiz-selector-list'); c.innerHTML=''; quizDatabase.forEach((q,i)=>{ c.innerHTML+=`<button onclick="activeQuizEditorIndex=${i}; loadQuizQuestionToEditor();" class="w-full text-left p-2 border rounded text-xs mb-1 ${i===activeQuizEditorIndex?'bg-emerald-100 border-emerald-500':'bg-white'}">S${i+1}: ${q.q.substring(0,15)}...</button>`; }); loadQuizQuestionToEditor(); }
         function loadQuizQuestionToEditor() { const q = quizDatabase[activeQuizEditorIndex]; document.getElementById('admin-quiz-active-q-label').innerText=`Soalan ${activeQuizEditorIndex+1}`; document.getElementById('admin-quiz-q-text').value=q.q; document.getElementById('admin-quiz-q-objective').value=q.objective; for(let i=0;i<4;i++) document.getElementById(`admin-quiz-opt-${i}`).value=q.options[i]||''; const s=document.getElementById('admin-quiz-correct-select'); s.innerHTML=''; q.options.forEach(o=>s.innerHTML+=`<option value="${o}" ${o===q.correct?'selected':''}>${o}</option>`); }
-        function saveActiveQuizQuestion() { const opts = [document.getElementById('admin-quiz-opt-0').value, document.getElementById('admin-quiz-opt-1').value, document.getElementById('admin-quiz-opt-2').value, document.getElementById('admin-quiz-opt-3').value]; quizDatabase[activeQuizEditorIndex] = { q:document.getElementById('admin-quiz-q-text').value, objective:document.getElementById('admin-quiz-q-objective').value, options:opts, correct:document.getElementById('admin-quiz-correct-select').value }; localStorage.setItem('tarkim_quiz_v25', JSON.stringify(quizDatabase)); syncStateToSheets(); Swal.fire('Disimpan','','success'); loadQuizEditorQuestionsList(); }
+        function saveActiveQuizQuestion() { const opts = [document.getElementById('admin-quiz-opt-0').value, document.getElementById('admin-quiz-opt-1').value, document.getElementById('admin-quiz-opt-2').value, document.getElementById('admin-quiz-opt-3').value]; quizDatabase[activeQuizEditorIndex] = { q:document.getElementById('admin-quiz-q-text').value, objective:document.getElementById('admin-quiz-q-objective').value, options:opts, correct:document.getElementById('admin-quiz-correct-select').value }; localStorage.setItem('tarkim_quiz_v26', JSON.stringify(quizDatabase)); syncStateToSheets(); Swal.fire('Disimpan','','success'); loadQuizEditorQuestionsList(); }
         
         function handleMediaFileUpload(elId, dbKey) { 
             const f = document.getElementById(elId).files[0]; 
@@ -957,18 +960,18 @@
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
                         let w = img.width; let h = img.height;
-                        const MAX = 600; // Maksimum saiz gambar supaya tak berat
+                        const MAX = 600; 
                         if(w > h) { if(w > MAX) { h *= MAX/w; w = MAX; } }
                         else { if(h > MAX) { w *= MAX/h; h = MAX; } }
                         canvas.width = w; canvas.height = h;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, w, h);
-                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); // Gambar dimampatkan
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); // Auto-compress gambar besar!
                         
                         mediaDatabase[dbKey] = compressedBase64; 
-                        localStorage.setItem('tarkim_media_v25', JSON.stringify(mediaDatabase)); 
+                        localStorage.setItem('tarkim_media_v26', JSON.stringify(mediaDatabase)); 
                         applyMediaSettings(); 
-                        Swal.fire('Berjaya', 'Fail Imej disimpan! Sedang menyegerak ke awan...', 'info');
+                        Swal.fire('Berjaya', 'Imej dimampatkan dan disimpan!', 'info');
                         syncStateToSheets(); 
                     }
                     img.src = e.target.result;
@@ -976,9 +979,9 @@
                 r.readAsDataURL(f); 
             } 
         }
-        function saveMediaUrl(dbKey, val) { if(val){ mediaDatabase[dbKey]=val; localStorage.setItem('tarkim_media_v25', JSON.stringify(mediaDatabase)); applyMediaSettings(); Swal.fire('Berjaya','URL Imej disegerakkan!','success'); syncStateToSheets(); } }
-        function saveVideoLink(val) { if(val){ mediaDatabase.videoUrl=val; localStorage.setItem('tarkim_media_v25', JSON.stringify(mediaDatabase)); applyMediaSettings(); Swal.fire('Berjaya','Video disegerakkan','success'); syncStateToSheets(); } }
-        function resetMediaDefaults() { mediaDatabase={nota1:'interactive_template', nota2:'interactive_template', teknik1:'interactive_template', videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'}; localStorage.setItem('tarkim_media_v25', JSON.stringify(mediaDatabase)); applyMediaSettings(); Swal.fire('Selesai','Media dikembalikan asal','success'); syncStateToSheets(); }
+        function saveMediaUrl(dbKey, val) { if(val){ mediaDatabase[dbKey]=val; localStorage.setItem('tarkim_media_v26', JSON.stringify(mediaDatabase)); applyMediaSettings(); Swal.fire('Berjaya','URL Imej disegerakkan!','success'); syncStateToSheets(); } }
+        function saveVideoLink(val) { if(val){ mediaDatabase.videoUrl=val; localStorage.setItem('tarkim_media_v26', JSON.stringify(mediaDatabase)); applyMediaSettings(); Swal.fire('Berjaya','Video disegerakkan','success'); syncStateToSheets(); } }
+        function resetMediaDefaults() { mediaDatabase={nota1:'interactive_template', nota2:'interactive_template', teknik1:'interactive_template', videoUrl:'https://www.youtube.com/embed/dQw4w9WgXcQ'}; localStorage.setItem('tarkim_media_v26', JSON.stringify(mediaDatabase)); applyMediaSettings(); Swal.fire('Selesai','Media dikembalikan asal','success'); syncStateToSheets(); }
 
     </script>
 </body>
