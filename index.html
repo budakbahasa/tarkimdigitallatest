@@ -593,7 +593,17 @@
                 .then(res => res.json())
                 .then(data => {
                     if(data && Object.keys(data).length > 0) {
-                        if(data.scores && data.scores.length > 0) scoresDatabase = data.scores.reverse();
+                        if(data.scores && data.scores.length > 0) {
+                            let newScoresDb = [];
+                            data.scores.forEach(row => {
+                                if (row.t1) newScoresDb.push({time:row.time, name:row.name, class:row.class, aliran:row.aliran, sekolah:row.sekolah, activity:"Latihan Tahap 1", score:row.t1, status:row.status});
+                                if (row.t2) newScoresDb.push({time:row.time, name:row.name, class:row.class, aliran:row.aliran, sekolah:row.sekolah, activity:"Latihan Tahap 2", score:row.t2, status:row.status});
+                                if (row.t3) newScoresDb.push({time:row.time, name:row.name, class:row.class, aliran:row.aliran, sekolah:row.sekolah, activity:"Latihan Tahap 3", score:row.t3, status:row.status});
+                                if (row.kuiz) newScoresDb.push({time:row.time, name:row.name, class:row.class, aliran:row.aliran, sekolah:row.sekolah, activity:"Kuiz Formatif", score:row.kuiz, status:row.status});
+                                if (row.mario) newScoresDb.push({time:row.time, name:row.name, class:row.class, aliran:row.aliran, sekolah:row.sekolah, activity:"Cabaran TarKiM", score:row.mario, status:row.status});
+                            });
+                            scoresDatabase = newScoresDb.reverse();
+                        }
                         if(data.state && Object.keys(data.state).length > 0) {
                             if(data.state.users) usersProfileDatabase = data.state.users;
                             if(data.state.feedbacks) feedbacksDatabase = data.state.feedbacks;
